@@ -1,0 +1,10 @@
+---
+import Todo from "../components/Todo.astro"
+let { title, todos } = Astro.props
+---
+<h2>{title}</h2>
+<ul>
+      {todos.map((todo) => (
+    <li>{todo.subject}</li>
+  ))}
+</ul>

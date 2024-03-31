@@ -1,0 +1,59 @@
+---
+
+import TodoList from "../components/TodoList.astro"
+
+
+let base_url = "http://127.0.0.1:8080"
+
+let test_todo = `${base_url}/test_todo`
+
+let todos = [
+	await (await fetch(test_todo)).json()
+]
+
+let url = `${base_url}/add_todo`
+
+let body = {
+	subject: "foobar",
+	status: "Stopped",
+}
+
+let res = await fetch(url, {
+	method: "POST",
+	body: JSON.stringify(body)
+}).then(() => console.log("sent"))
+
+console.log(res)
+
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Todos</h1>
+		<TodoList title="First List" todos={todos} />
+	</body>
+
+	<button onclick="add_todo()" "button">Send POST for new TODO</button>
+
+	<script>
+
+		let body = {
+			subject: "foobar2",
+			state: "Complete",
+		}
+		let base_url = "http://127.0.0.1:8080"
+		let endpoint = "add_todo"
+		let url = `${base_url}/${endpoint}`
+		function add_todo() {
+		}
+
+
+	</script>
+</html>
