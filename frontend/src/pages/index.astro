@@ -1,6 +1,5 @@
 ---
 import TodoList from "../components/TodoList.astro";
-import NewTodo from "../components/NewTodo.astro";
 
 let base_url = "http://127.0.0.1:8080";
 
@@ -9,6 +8,7 @@ let todos_endpoint = `${base_url}/todos`;
 let todos = await (await fetch(todos_endpoint)).json();
 
 let url = `${base_url}/add_todo`;
+let list_counter = 0;
 ---
 
 <html lang="en">
@@ -21,20 +21,6 @@ let url = `${base_url}/add_todo`;
 	</head>
 	<body>
 		<h1>Todos</h1>
-		<TodoList title="First List" todos={todos} />
-		<NewTodo />
+		<TodoList title="First List" todos={todos} id={list_counter++} />
 	</body>
-
-	<button onclick="add_todo()" "button">Send POST for new TODO</button>
-
-	<script>
-		let body = {
-			subject: "foobar2",
-			state: "Complete",
-		};
-		let base_url = "http://127.0.0.1:8080";
-		let endpoint = "add_todo";
-		let url = `${base_url}/${endpoint}`;
-		function add_todo() {}
-	</script>
 </html>

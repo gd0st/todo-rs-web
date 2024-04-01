@@ -1,10 +1,79 @@
 ---
-import Todo from "../components/Todo.astro"
-let { title, todos } = Astro.props
+import Todo from "../components/Todo.astro";
+let { title, todos, id } = Astro.props;
+
+let listId = `list-${id}`;
+console.log(listId);
 ---
+
 <h2>{title}</h2>
-<ul>
-      {todos.map((todo) => (
-    <li>{todo.subject}</li>
-  ))}
+<ul id={listId}>
+	<todo-list data-list-id={listId}>
+		{todos.map((todo) => <li>{todo.subject}</li>)}
+	</todo-list>
 </ul>
+<form action="#" id="form" accept-charset="utf-8">
+	<label>New Todo:</label>
+	<input type="text" name="subject" required />
+	<button type="submit">Submit</button>
+</form>
+
+<script>
+	import Todo from "./Todo.astro";
+
+	let thisForm = document.getElementById("form");
+	async function submitTodo(e) {
+		e.preventDefault();
+		if (thisForm instanceof HTMLFormElement) {
+			const formData = new FormData(thisForm).entries();
+			let data = Object.fromEntries(formData);
+			let todo = {
+				id: null,
+				subject: data.subject as string,
+				status: "Stopped",
+			};
+			try {
+				let res = await fetch("/api/data.json", {
+					method: "POST",
+					body: JSON.stringify(todo),
+					headers: {
+						"Content-type": "application/json",
+					},
+				});
+				console.log(res.ok);
+				if (res.ok) {
+					//let list = new TodoList();
+					//list.add_list_element(todo.subject);
+					return todo.subject;
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					console.error(error.message);
+				}
+			}
+		}
+		return null;
+	}
+
+	class TodoList extends HTMLElement {
+		constructor() {
+			super();
+			let listId = this.dataset.listId;
+			console.log(listId);
+			let subject = thisForm.addEventListener(
+				"submit",
+				async function (e) {
+					let subject = await submitTodo(e);
+					if (subject != null) {
+						let list = document.getElementById(listId);
+						let li = document.createElement("li");
+						li.textContent = subject;
+						list.appendChild(li);
+					}
+				},
+			);
+		}
+	}
+
+	customElements.define("todo-list", TodoList);
+</script>

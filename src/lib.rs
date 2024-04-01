@@ -67,9 +67,11 @@ pub mod routes {
         //item: web::Json<Todo>,
         item: String,
     ) -> Result<impl Responder> {
-        println!("Post received: {:?}", &item);
+        let todo: Todo = serde_json::from_str(&item)?;
+        let subject = todo.subject();
         let mut list = data.lock().unwrap();
-        //list.add(item.0);
+        list.add(todo);
+        println!("Added todo {} to {}", subject, list.name());
         Ok(HttpResponse::Ok())
     }
 }

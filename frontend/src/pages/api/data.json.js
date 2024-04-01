@@ -1,19 +1,35 @@
 import { AstroComponentInstance } from "astro/runtime/server/index.js";
 
-let RUST_URL = "http://127.0.0.1:8080/add_todo"
-export async function POST({request}) {
-	console.log("received!");
-	console.log("new new")
-	console.log(await request.body)
-	let todo = {
-		subject: "Dishes!!",
-		id: null,
-		status: "Stopped",
+function endpoint(s) {
+	let base_url = "http://127.0.0.1:8080"
+	let endpoints = new Map();
+	endpoints.set("addTodo", "/add_todo");
+	endpoints.set("todos", "/todos");
+
+	if (typeof s == "string" && endpoints.has(s)) {
+		let endpoint = endpoints.get(s);
+		return `${base_url}${endpoint}`;
 	}
-	console.log(todo)
+	return null;
+}
+
+export async function POST({request}) {
+
+	let url = endpoint("addTodo");
+
+	if ( url == null) {
+		return new Response(JSON.stringify({message: "failed to find endpoint."}), {
+			status: 501,
+			headers: {
+				"Content-type": "application/json"
+			}
+		})
+	}
+
+	let todo = await request.json()
 
 	try {
-		let res = await fetch(RUST_URL, {
+		let res = await fetch(url, {
 			method: "POST",
 			body: JSON.stringify(todo)
 		})
