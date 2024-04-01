@@ -1,11 +1,24 @@
 ---
 import TodoList from "../components/TodoList.astro";
+import Erawr from "../components/Erawr.astro";
 
 let base_url = "http://127.0.0.1:8080";
 
 let todos_endpoint = `${base_url}/todos`;
+let healthCheckEndpoint = `${base_url}/health_check`;
 
-let todos = await (await fetch(todos_endpoint)).json();
+let todos = [];
+let apiIsUp = false;
+try {
+	await fetch(healthCheckEndpoint);
+	console.log("Passed endpoint health check.");
+	todos = await (await fetch(todos_endpoint)).json();
+	apiIsUp = true;
+} catch (error) {
+	if (error instanceof Error) {
+		console.error("Health Check Failed!!!");
+	}
+}
 
 let url = `${base_url}/add_todo`;
 let list_counter = 0;
@@ -13,6 +26,7 @@ let list_counter = 0;
 
 <html lang="en">
 	<head>
+		{!apiIsUp && <Erawr message="API IS DOWN" />}
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />

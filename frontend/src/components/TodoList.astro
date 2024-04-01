@@ -3,7 +3,6 @@ import Todo from "../components/Todo.astro";
 let { title, todos, id } = Astro.props;
 
 let listId = `list-${id}`;
-console.log(listId);
 ---
 
 <h2>{title}</h2>
@@ -40,10 +39,7 @@ console.log(listId);
 						"Content-type": "application/json",
 					},
 				});
-				console.log(res.ok);
 				if (res.ok) {
-					//let list = new TodoList();
-					//list.add_list_element(todo.subject);
 					return todo.subject;
 				}
 			} catch (error) {
@@ -59,7 +55,6 @@ console.log(listId);
 		constructor() {
 			super();
 			let listId = this.dataset.listId;
-			console.log(listId);
 			let subject = thisForm.addEventListener(
 				"submit",
 				async function (e) {

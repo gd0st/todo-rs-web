@@ -25,6 +25,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .service(routes::health_check)
             .service(routes::test_todo)
             .service(routes::add_todo)
             .service(routes::get_todos)

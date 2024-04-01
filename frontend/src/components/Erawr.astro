@@ -1,0 +1,14 @@
+---
+let { message = "ERROR UNKOWN" } = Astro.props;
+---
+
+<p class="error-message">{message}</p>
+
+<style>
+	.error-message {
+		background: red;
+		color: white;
+		display: block;
+		text-align: center;
+	}
+</style>
