@@ -1030,21 +1030,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
-name = "todo-backend"
+name = "todo-rs"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "todo-rs-web"
 version = "0.1.0"
 dependencies = [
  "actix-web",
  "serde",
  "serde_json",
  "todo-rs",
-]
-
-[[package]]
-name = "todo-rs"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]

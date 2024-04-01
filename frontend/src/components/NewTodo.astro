@@ -1,0 +1,57 @@
+---
+let rust_server = "http://127.0.0.1:8080/add_todo";
+//if (Astro.request.method == "POST") {
+//try {
+//const data = await Astro.request.formData();
+
+//console.log(data);
+
+//// TODO think of a way this can be auto handled by
+//// the rust backend w/o needing to do SSR
+//} catch (error) {
+//if (error instanceof Error) {
+//console.error(error.message);
+//}
+//}
+//}
+---
+
+<h2>New Todo</h2>
+
+<form action="#" id="form" accept-charset="utf-8">
+	<label>New Todo:</label>
+	<input type="text" name="subject" required />
+	<button type="submit">Submit</button>
+</form>
+
+<script>
+	let thisForm = document.getElementById("form");
+	thisForm.addEventListener("submit", async function submit(e) {
+		e.preventDefault();
+		if (thisForm instanceof HTMLFormElement) {
+			const formData = new FormData(thisForm).entries();
+
+			let data = Object.fromEntries(formData);
+			let todo = {
+				id: null,
+				subject: data.subject,
+				status: "Stopped",
+			};
+
+			try {
+				let res = await fetch("/api/data.json", {
+					method: "POST",
+					body: JSON.stringify(todo),
+					headers: {
+						"Content-type": "application/json",
+					},
+				});
+				console.log(res);
+			} catch (error) {
+				if (error instanceof Error) {
+					console.error(error.message);
+				}
+			}
+		}
+	});
+</script>

@@ -1,6 +1,6 @@
+use actix_web::post;
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
-use actix_web::post;
 #[derive(Deserialize, Debug, Clone, Serialize)]
 pub struct Todo {
     subject: String,
@@ -22,14 +22,17 @@ impl TodoList {
     async fn add(&mut self, todo: Todo) {
         self.todos.push(todo)
     }
-
-
 }
 pub mod routes {
-    use todo_rs::{Todo, TodoList};
-    use actix_web::{get, post, Responder, Result, HttpResponse, body::MessageBody, web};
-    use std::sync::Mutex;
+    use actix_web::{
+        body::MessageBody,
+        get, post,
+        web::{self, JsonBody},
+        HttpResponse, Responder, Result,
+    };
     use serde::Deserialize;
+    use std::sync::Mutex;
+    use todo_rs::{Todo, TodoList};
 
     #[derive(Deserialize)]
     struct NewTodo {
@@ -40,20 +43,33 @@ pub mod routes {
         Ok(HttpResponse::Ok())
     }
 
+    #[get("/todos")]
+    pub async fn get_todos(list: web::Data<Mutex<TodoList>>) -> Result<impl Responder> {
+        let list = list.lock().unwrap();
+
+        let todos: Vec<&Todo> = list.iter().collect();
+        let text = serde_json::to_string(&todos).unwrap();
+        Ok(HttpResponse::Ok().body(text))
+    }
+
     #[get("/test_todo")]
     pub async fn test_todo() -> Result<impl Responder> {
         let todo = Todo::new("foobar");
         let text = serde_json::to_string(&todo)?;
-        println!("{}", text);
+        println!("get {}", text);
         Ok(HttpResponse::Ok().body(serde_json::to_string(&todo)?))
     }
 
     // TODO need to fix main todo library to receive from Todo struct instead of the current setup.
     #[post("/add_todo")]
-    pub async fn add_todo(data: web::Data<Mutex<TodoList>>, item: web::Json<Todo>) -> Result<impl Responder> {
+    pub async fn add_todo(
+        data: web::Data<Mutex<TodoList>>,
+        //item: web::Json<Todo>,
+        item: String,
+    ) -> Result<impl Responder> {
+        println!("Post received: {:?}", &item);
         let mut list = data.lock().unwrap();
-        list.new_todo("new item");
-        println!("new todo!");
+        //list.add(item.0);
         Ok(HttpResponse::Ok())
     }
 }

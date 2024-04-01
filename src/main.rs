@@ -1,9 +1,9 @@
-use actix_web::{App, HttpServer, web};
-use todo_rs::TodoList;
+use actix_web::{web, App, HttpServer};
 use serde::Deserialize;
-use std::sync::Mutex;
 use std::net::Ipv4Addr;
-use todo_backend::routes;
+use std::sync::Mutex;
+use todo_rs::TodoList;
+use todo_rs_web::routes;
 
 #[derive(Deserialize)]
 struct Config {
@@ -12,7 +12,7 @@ struct Config {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()>{
+async fn main() -> std::io::Result<()> {
     println!("Hello, world!");
     let config = Config {
         bind: Ipv4Addr::new(127, 0, 0, 1),
@@ -21,13 +21,16 @@ async fn main() -> std::io::Result<()>{
 
     let list = TodoList::new("foobar");
 
-    let mux_list = web::Data::new(
-        Mutex::new(list)
-    );
+    let mux_list = web::Data::new(Mutex::new(list));
 
     HttpServer::new(move || {
-        App::new().service(routes::test_todo).service(routes::add_todo).app_data(mux_list.clone())
-    }).bind((config.bind, 8080))?.run().await
-
-
+        App::new()
+            .service(routes::test_todo)
+            .service(routes::add_todo)
+            .service(routes::get_todos)
+            .app_data(mux_list.clone())
+    })
+    .bind((config.bind, 8080))?
+    .run()
+    .await
 }
